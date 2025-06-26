@@ -1,5 +1,7 @@
 package com.dhanvi.enotes_api_service.controller;
 
+import com.dhanvi.enotes_api_service.dto.CategoryDto;
+import com.dhanvi.enotes_api_service.dto.CategoryResponseDto;
 import com.dhanvi.enotes_api_service.model.Category;
 import com.dhanvi.enotes_api_service.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +21,8 @@ public class CategoryContoller {
     CategoryService categoryService;
 
     @PostMapping("save-category")
-    public ResponseEntity<?> saveCategory(@RequestBody Category category){
-        Boolean saveCategory= categoryService.saveCategory(category);
+    public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto){
+        Boolean saveCategory= categoryService.saveCategory(categoryDto);
         if(saveCategory){
             return new ResponseEntity<>("Saved successfully", HttpStatus.CREATED);
         }
@@ -31,7 +33,19 @@ public class CategoryContoller {
     }
     @GetMapping("get-categories")
     public ResponseEntity<?> getAllCategory(){
-        List<Category> categories= categoryService.getAllCategory();
+        List<CategoryDto> categories= categoryService.getAllCategory();
+        if(CollectionUtils.isEmpty(categories)){
+            return ResponseEntity.noContent().build();
+        }
+        else {
+            return new ResponseEntity<>(categories, HttpStatus.OK);
+        }
+
+    }
+
+    @GetMapping("active-categories")
+    public ResponseEntity<?> getActiveCategory(){
+        List<CategoryResponseDto> categories= categoryService.getActiveCategory();
         if(CollectionUtils.isEmpty(categories)){
             return ResponseEntity.noContent().build();
         }
