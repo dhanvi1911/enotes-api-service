@@ -54,4 +54,27 @@ public class CategoryContoller {
         }
 
     }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCategoryById(@PathVariable Integer id){
+        CategoryDto categoryDto= categoryService.getCategoryById(id);
+        if(ObjectUtils.isEmpty(categoryDto)){
+            return new ResponseEntity<>("Category not found with id"+id,HttpStatus.NOT_FOUND);
+        }
+        else{
+            return new ResponseEntity<>(categoryDto,HttpStatus.OK);
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCategoryById(@PathVariable Integer id){
+        Boolean deleted= categoryService.deleteCategoryById(id);
+        if(deleted){
+            return new ResponseEntity<>("Category deleted successfully",HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>("Category not deleted with id"+id,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
