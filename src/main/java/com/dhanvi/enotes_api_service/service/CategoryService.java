@@ -8,7 +8,10 @@ public interface CategoryService {
 
     public boolean saveCategory(CategoryDto categoryDto);
     public List<CategoryDto> getAllCategory();
+
     public List<CategoryResponseDto> getActiveCategory();
-    CategoryDto getCategoryById(Integer id);
+
+    CategoryDto getCategoryById(Integer id) throws Exception;
+
     Boolean deleteCategoryById(Integer id);
 }
