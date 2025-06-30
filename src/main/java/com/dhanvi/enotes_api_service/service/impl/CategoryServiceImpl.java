@@ -2,6 +2,7 @@ package com.dhanvi.enotes_api_service.service.impl;
 
 import com.dhanvi.enotes_api_service.dto.CategoryDto;
 import com.dhanvi.enotes_api_service.dto.CategoryResponseDto;
+import com.dhanvi.enotes_api_service.exception.ResourceNotFoundExceptionHandler;
 import com.dhanvi.enotes_api_service.model.Category;
 import com.dhanvi.enotes_api_service.repository.CategoryRepo;
 import com.dhanvi.enotes_api_service.service.CategoryService;
@@ -57,11 +58,11 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto getCategoryById(Integer id) {
-        Optional<Category> findByID= categoryRepo.findByIdAndIsDeletedFalse(id);
-        if(findByID.isPresent()){
-            Category category = findByID.get();
-            return mapper.map(category,CategoryDto.class);
+    public CategoryDto getCategoryById(Integer id) throws Exception{
+        Category findByID= categoryRepo.findByIdAndIsDeletedFalse(id).
+                orElseThrow(()-> new ResourceNotFoundExceptionHandler("Category not found with id" + id));
+        if(!ObjectUtils.isEmpty(findByID)){
+            return mapper.map(findByID,CategoryDto.class);
         }
         else
         return null;

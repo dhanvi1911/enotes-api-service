@@ -2,8 +2,10 @@ package com.dhanvi.enotes_api_service.controller;
 
 import com.dhanvi.enotes_api_service.dto.CategoryDto;
 import com.dhanvi.enotes_api_service.dto.CategoryResponseDto;
+import com.dhanvi.enotes_api_service.exception.ResourceNotFoundExceptionHandler;
 import com.dhanvi.enotes_api_service.model.Category;
 import com.dhanvi.enotes_api_service.service.CategoryService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j //used to capture logs, it is a annotation from lombok
 @RestController
 @RequestMapping("api/v1/category")
 public class CategoryContoller {
@@ -57,7 +60,23 @@ public class CategoryContoller {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCategoryById(@PathVariable Integer id){
+    public ResponseEntity<?> getCategoryById(@PathVariable Integer id) throws Exception{
+//        try {
+//            CategoryDto categoryDto= categoryService.getCategoryById(id);
+//            if(ObjectUtils.isEmpty(categoryDto)){
+//                return new ResponseEntity<>("Category not found with id"+id,HttpStatus.NOT_FOUND);
+//            }
+//            else{
+//                return new ResponseEntity<>(categoryDto,HttpStatus.OK);
+//            }
+//
+//        }catch (ResourceNotFoundExceptionHandler e) {
+//            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+//        }
+//
+//        catch (Exception e) {
+//            return new ResponseEntity<>(e.getMessage(),HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
         CategoryDto categoryDto= categoryService.getCategoryById(id);
         if(ObjectUtils.isEmpty(categoryDto)){
             return new ResponseEntity<>("Category not found with id"+id,HttpStatus.NOT_FOUND);
@@ -65,6 +84,8 @@ public class CategoryContoller {
         else{
             return new ResponseEntity<>(categoryDto,HttpStatus.OK);
         }
+
+
     }
 
     @DeleteMapping("/{id}")
