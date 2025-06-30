@@ -58,7 +58,7 @@ public class CategoryContoller {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCategoryById(@PathVariable Integer id){
+    public ResponseEntity<?> getCategoryById(@PathVariable Integer id) throws Exception {
         CategoryDto categoryDto= categoryService.getCategoryById(id);
         if(ObjectUtils.isEmpty(categoryDto)){
             return new ResponseEntity<>("Category not found with id"+id,HttpStatus.NOT_FOUND);
