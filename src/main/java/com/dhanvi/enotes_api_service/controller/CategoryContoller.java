@@ -4,6 +4,7 @@ import com.dhanvi.enotes_api_service.dto.CategoryDto;
 import com.dhanvi.enotes_api_service.dto.CategoryResponseDto;
 import com.dhanvi.enotes_api_service.model.Category;
 import com.dhanvi.enotes_api_service.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class CategoryContoller {
     CategoryService categoryService;
 
     @PostMapping("save-category")
-    public ResponseEntity<?> saveCategory(@RequestBody CategoryDto categoryDto){
+    public ResponseEntity<?> saveCategory(@Valid @RequestBody CategoryDto categoryDto){
         Boolean saveCategory= categoryService.saveCategory(categoryDto);
         if(saveCategory){
             return new ResponseEntity<>("Saved successfully", HttpStatus.CREATED);
