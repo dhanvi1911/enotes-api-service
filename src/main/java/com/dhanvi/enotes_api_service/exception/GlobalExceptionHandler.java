@@ -22,4 +22,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> resourceNotFoundException(Exception e){
         return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(ExistDataException.class)
+    public ResponseEntity<?> handleExistDataException(Exception e){
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+    }
 }
