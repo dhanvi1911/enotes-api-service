@@ -2,6 +2,7 @@ package com.dhanvi.enotes_api_service.service.impl;
 
 import com.dhanvi.enotes_api_service.dto.CategoryDto;
 import com.dhanvi.enotes_api_service.dto.CategoryResponseDto;
+import com.dhanvi.enotes_api_service.exception.ExistDataException;
 import com.dhanvi.enotes_api_service.exception.ResourceNotFoundExceptionHandler;
 import com.dhanvi.enotes_api_service.model.Category;
 import com.dhanvi.enotes_api_service.repository.CategoryRepo;
@@ -31,6 +32,15 @@ public class CategoryServiceImpl implements CategoryService {
 //        category.setName(categoryDto.getName());
 //        category.setDescription(categoryDto.getDescription());
 //        category.setIsActive(categoryDto.getIsActive());
+
+        Boolean exist=categoryRepo.existsByNameIgnoreCase(categoryDto.getName().trim());
+//        System.out.println("Checking if category exists with name: " + categoryDto.getName().trim());
+//        System.out.println(exist);
+
+        if(exist){
+
+            throw new ExistDataException("Category already exists with the name.");
+        }
 
         Category category=mapper.map(categoryDto, Category.class);
 
