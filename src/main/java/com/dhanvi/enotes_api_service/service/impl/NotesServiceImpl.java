@@ -1,6 +1,7 @@
 package com.dhanvi.enotes_api_service.service.impl;
 
 import com.dhanvi.enotes_api_service.dto.CategoryDto;
+import com.dhanvi.enotes_api_service.dto.FileDetailsDto;
 import com.dhanvi.enotes_api_service.dto.NotesDto;
 import com.dhanvi.enotes_api_service.exception.ResourceNotFoundExceptionHandler;
 import com.dhanvi.enotes_api_service.model.Category;
@@ -91,7 +92,9 @@ public class NotesServiceImpl implements NotesService {
             FileDetails savedFile = fileDetailsRepo.save(fileDetail);
             notes.setFileDetails(savedFile);
 
+
         }
+
 
         Notes saved=notesRepo.save(notes);
         if(!ObjectUtils.isEmpty(saved)){
@@ -117,9 +120,25 @@ public class NotesServiceImpl implements NotesService {
 //
 //    }
 
+//    @Override
+//    public List<NotesDto> getAllNotes() {
+//
+//        return notesRepo.findAll().stream().map(notes -> mapper.map(notes,NotesDto.class)).toList();
+//    }
+
     @Override
     public List<NotesDto> getAllNotes() {
+        return notesRepo.findAll().stream().map(notes -> {
+            NotesDto dto = mapper.map(notes, NotesDto.class);
 
-        return notesRepo.findAll().stream().map(notes -> mapper.map(notes,NotesDto.class)).toList();
+            // ✅ Manually map file details
+            if (notes.getFileDetails() != null) {
+                FileDetailsDto fileDto = mapper.map(notes.getFileDetails(), FileDetailsDto.class);
+                dto.setFileDetailsDto(fileDto);
+            }
+
+            return dto;
+        }).toList();
     }
+
 }

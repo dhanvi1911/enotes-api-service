@@ -30,7 +30,7 @@ public class NotesDto {
     private Integer updatedBy;
     private Date updatedOn;
     private MultipartFile fileDetails;
-//    private FileDetailsDto fileDetailsDto;
+    private FileDetailsDto fileDetailsDto;
 
     @AllArgsConstructor
     @NoArgsConstructor
