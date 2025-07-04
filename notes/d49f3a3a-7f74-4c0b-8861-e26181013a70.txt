@@ -1,0 +1,39 @@
+public Boolean saveNotes(NotesDto notesDto) throws Exception {
+
+    checkCategoryExists(notesDto.getCategory());
+
+    Notes notes = mapper.map(notesDto, Notes.class);
+
+    MultipartFile file = notesDto.getFile();
+
+    if (file != null && !file.isEmpty()) {
+        // Generate unique file name
+        String uniqueFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+        // Define upload path
+        String uploadDir = "uploads/";
+        File folder = new File(uploadDir);
+        if (!folder.exists()) folder.mkdirs();
+
+        // Save file to disk
+        Path filePath = Paths.get(uploadDir + uniqueFileName);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        // Create FileDetails entity
+        FileDetails fileDetails = FileDetails.builder()
+                .uploadFileName(uniqueFileName)
+                .originalFilename(file.getOriginalFilename())
+                .displayFileName(file.getOriginalFilename()) // or customize
+                .path(filePath.toString())
+                .fileSize(file.getSize())
+                .build();
+
+        FileDetails savedFile = fileDetailsRepo.save(fileDetails); // Make sure you autowire this repo
+
+        // Associate file with note
+        notes.setFileDetails(savedFile);
+    }
+
+    Notes saved = notesRepo.save(notes);
+    return saved != null;
+}

@@ -22,5 +22,9 @@ public class Notes extends Base{
     private String description;
 
     @ManyToOne
+    @JoinColumn(name = "category_id")
     private Category category;
+
+    @ManyToOne
+    private FileDetails fileDetails;
 }
