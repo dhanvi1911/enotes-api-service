@@ -15,8 +15,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
+
 public class CategoryDto {
 
     private Integer id;

@@ -2,12 +2,11 @@ package com.dhanvi.enotes_api_service.controller;
 
 import com.dhanvi.enotes_api_service.dto.CategoryDto;
 import com.dhanvi.enotes_api_service.dto.NotesDto;
+import com.dhanvi.enotes_api_service.model.FileDetails;
 import com.dhanvi.enotes_api_service.service.NotesService;
 import com.dhanvi.enotes_api_service.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -34,18 +33,20 @@ public class NotesController {
         }
     }
 
-    @InitBinder
-    public void bindCategory(WebDataBinder binder) {
-        binder.registerCustomEditor(CategoryDto.class, "category", new PropertyEditorSupport() {
-            @Override
-            public void setAsText(String text) {
-                System.out.println("Converting category = " + text); // Debugging line
-                CategoryDto categoryDto = new CategoryDto();
-                categoryDto.setId(Integer.parseInt(text));
-                setValue(categoryDto);
-            }
-        });
-    }
+   @GetMapping("download/{id}")
+    public ResponseEntity<?> downloadFile(@PathVariable Integer id) throws Exception {
+        byte [] downloadedFile = notesService.downloadNote(id);
+       FileDetails fileDetails= notesService.getFileDetails(id);
+       HttpHeaders headers = new HttpHeaders();
+       headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+       headers.setContentDisposition(ContentDisposition
+               .attachment()
+               .filename(fileDetails.getDisplayFileName())
+               .build());
+       return new ResponseEntity<>(downloadedFile, headers, HttpStatus.OK);
+       
+
+   }
 
 
 
