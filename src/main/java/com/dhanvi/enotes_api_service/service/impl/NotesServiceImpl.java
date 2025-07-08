@@ -1,6 +1,5 @@
 package com.dhanvi.enotes_api_service.service.impl;
 
-import com.dhanvi.enotes_api_service.dto.CategoryDto;
 import com.dhanvi.enotes_api_service.dto.FileDetailsDto;
 import com.dhanvi.enotes_api_service.dto.NotesDto;
 import com.dhanvi.enotes_api_service.exception.ResourceNotFoundExceptionHandler;
@@ -15,6 +14,9 @@ import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
@@ -156,6 +158,15 @@ public class NotesServiceImpl implements NotesService {
     public FileDetails getFileDetails(Integer id) throws Exception {
         FileDetails fileDetails = fileDetailsRepo.findById(id).orElseThrow(()-> new ResourceNotFoundExceptionHandler("File is not available"));
         return fileDetails;
+    }
+
+    @Override
+    public Page<NotesDto> getAllNotesByUserID(Integer UserId, int page, int size) {
+//        List<Notes> notes =notesRepo.findByCreatedBy(UserId);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Notes> notesPage = notesRepo.findAll(pageable);
+        return notesPage.map(note -> mapper.map(note, NotesDto.class));
+
     }
 
 }

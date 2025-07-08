@@ -3,9 +3,11 @@ package com.dhanvi.enotes_api_service.controller;
 import com.dhanvi.enotes_api_service.dto.CategoryDto;
 import com.dhanvi.enotes_api_service.dto.NotesDto;
 import com.dhanvi.enotes_api_service.model.FileDetails;
+import com.dhanvi.enotes_api_service.model.Notes;
 import com.dhanvi.enotes_api_service.service.NotesService;
 import com.dhanvi.enotes_api_service.util.CommonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.*;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.WebDataBinder;
@@ -49,7 +51,6 @@ public class NotesController {
    }
 
 
-
     @GetMapping("get-notes")
     public ResponseEntity<?> getAllNotes(){
         List<NotesDto> notesDtos= notesService.getAllNotes();
@@ -57,5 +58,15 @@ public class NotesController {
             return ResponseEntity.noContent().build();
         }
         else return CommonUtil.createBuildResponse(notesDtos, HttpStatus.OK);
+    }
+
+    @GetMapping("user-notes")
+    public ResponseEntity<?> getAllNotesOfUser(@RequestParam (defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size){
+        Integer userID = 1;
+        Page<NotesDto> notesDtos = notesService.getAllNotesByUserID(userID, page, size);
+//        if(CollectionUtils.isEmpty(notesDtos)){
+//            return ResponseEntity.noContent().build();
+//        }
+        return new ResponseEntity<>(notesDtos, HttpStatus.FOUND);
     }
 }
