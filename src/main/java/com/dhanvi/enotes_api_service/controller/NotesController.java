@@ -2,6 +2,7 @@ package com.dhanvi.enotes_api_service.controller;
 
 import com.dhanvi.enotes_api_service.dto.CategoryDto;
 import com.dhanvi.enotes_api_service.dto.NotesDto;
+import com.dhanvi.enotes_api_service.exception.ResourceNotFoundExceptionHandler;
 import com.dhanvi.enotes_api_service.model.FileDetails;
 import com.dhanvi.enotes_api_service.model.Notes;
 import com.dhanvi.enotes_api_service.service.NotesService;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,13 +62,47 @@ public class NotesController {
         else return CommonUtil.createBuildResponse(notesDtos, HttpStatus.OK);
     }
 
-    @GetMapping("user-notes")
+    @GetMapping("user-notes")   // for pagination
     public ResponseEntity<?> getAllNotesOfUser(@RequestParam (defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size){
         Integer userID = 1;
         Page<NotesDto> notesDtos = notesService.getAllNotesByUserID(userID, page, size);
-//        if(CollectionUtils.isEmpty(notesDtos)){
-//            return ResponseEntity.noContent().build();
-//        }
         return new ResponseEntity<>(notesDtos, HttpStatus.FOUND);
     }
+
+    @GetMapping("delete/{id}")
+    public ResponseEntity<?> deleteNote(@PathVariable Integer id) throws Exception {
+        notesService.softDeleteNote(id);
+        return CommonUtil.createBuildResponseMessage("Deleted Successfully", HttpStatus.OK);
+    }
+
+    @GetMapping("restore/{id}")
+    public ResponseEntity<?> restoreNotes(@PathVariable Integer id) throws Exception {
+        notesService.restoreNotes(id);
+        return CommonUtil.createBuildResponseMessage("Restored the note", HttpStatus.OK);
+    }
+
+    @GetMapping("RecycleBinNotes")
+    public ResponseEntity<?> getUserRecycleBinNotes(){
+        Integer userID =1;
+        List<NotesDto> RecycledNotes = notesService.getUserRecycleBinNotes(userID);
+        if (CollectionUtils.isEmpty(RecycledNotes)){
+            return CommonUtil.createBuildResponseMessage("No notes present in the recycled bin", HttpStatus.OK);
+        }
+        return CommonUtil.createBuildResponse(RecycledNotes, HttpStatus.OK);
+    }
+
+    @DeleteMapping("delete/{id}")
+    public ResponseEntity<?> hardDeleteNote(@PathVariable Integer id) throws Exception {
+        notesService.hardDeleteNote(id);
+        return CommonUtil.createBuildResponseMessage("Deleted the note from DB", HttpStatus.OK);
+    }
+
+    @DeleteMapping("empty-recycle-bin")
+    public ResponseEntity<?> deleteAllNotesFromRecycleBin() throws Exception {
+        Integer userID=1;
+        notesService.deleteAllNotesFromRecycleBin(userID);
+        return CommonUtil.createBuildResponseMessage("Deleted Notes from Recycle bin for the user", HttpStatus.OK);
+    }
+
+
 }
