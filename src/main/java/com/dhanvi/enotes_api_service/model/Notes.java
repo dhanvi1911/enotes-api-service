@@ -31,4 +31,5 @@ public class Notes extends Base{
 
     private boolean isDeleted;
     private LocalDateTime deletedOn;
+    private Boolean isFavourite;
 }

@@ -38,6 +38,7 @@ public class NotesDto {
     @JsonIgnore
     private MultipartFile fileDetails;
     private FileDetailsDto fileDetailsDto;
+    private Boolean isFavourite;
 
 //    @AllArgsConstructor
 //    @NoArgsConstructor

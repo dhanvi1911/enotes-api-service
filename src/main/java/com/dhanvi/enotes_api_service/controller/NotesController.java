@@ -104,5 +104,25 @@ public class NotesController {
         return CommonUtil.createBuildResponseMessage("Deleted Notes from Recycle bin for the user", HttpStatus.OK);
     }
 
+    @GetMapping("markfav/{noteID}")
+    public ResponseEntity<?> markFavouriteNote(@PathVariable Integer noteID) throws Exception {
+        notesService.markFavouriteNote(noteID);
+        return CommonUtil.createBuildResponseMessage("Marked the note as Favourite",HttpStatus.OK);
+    }
+
+    @GetMapping("unmarkfav/{noteID}")
+    public ResponseEntity<?> unmarkFavourite(@PathVariable Integer noteID) throws Exception {
+        notesService.unmarkFavourite(noteID);
+        return CommonUtil.createBuildResponseMessage("Unmarked the notes from Favourite", HttpStatus.OK);
+    }
+
+    @GetMapping("Favourites")
+    public ResponseEntity<?> allFavouritesNotes(){
+        Integer userID=1;
+        List<Notes> notes = notesService.allFavouriteNotes(userID);
+        return CommonUtil.createBuildResponse(notes, HttpStatus.OK);
+    }
+
+
 
 }
