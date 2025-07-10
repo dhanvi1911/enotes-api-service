@@ -284,5 +284,16 @@ public class NotesServiceImpl implements NotesService {
         return Favnotes;
     }
 
+    @Override
+    public void copyNotes(Integer id) throws Exception {
+        Notes note =notesRepo.findById(id).orElseThrow(()-> new ResourceNotFoundExceptionHandler("Invalid Notes ID"));
+        Notes newNote = new Notes();
+        newNote.setTitle(note.getTitle());
+        newNote.setCategory(note.getCategory());
+        newNote.setDescription(note.getDescription());
+        newNote.setIsFavourite(false);
+        notesRepo.save(newNote);
+    }
+
 
 }

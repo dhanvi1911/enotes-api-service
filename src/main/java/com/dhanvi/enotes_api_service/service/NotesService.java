@@ -34,4 +34,6 @@ public interface NotesService {
     void unmarkFavourite(Integer noteID) throws Exception;
 
     List<Notes> allFavouriteNotes(Integer userID);
+
+    void copyNotes(Integer id) throws Exception;
 }
