@@ -3,6 +3,7 @@ package com.dhanvi.enotes_api_service.service;
 import com.dhanvi.enotes_api_service.dto.NotesDto;
 import com.dhanvi.enotes_api_service.exception.ResourceNotFoundExceptionHandler;
 import com.dhanvi.enotes_api_service.model.FileDetails;
+import com.dhanvi.enotes_api_service.model.Notes;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -27,4 +28,10 @@ public interface NotesService {
     void hardDeleteNote(Integer id) throws Exception;
 
     void deleteAllNotesFromRecycleBin(Integer userID) throws Exception;
+
+    void markFavouriteNote(Integer noteID) throws Exception;
+
+    void unmarkFavourite(Integer noteID) throws Exception;
+
+    List<Notes> allFavouriteNotes(Integer userID);
 }

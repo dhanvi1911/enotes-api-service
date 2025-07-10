@@ -14,4 +14,8 @@ public interface NotesRepo extends JpaRepository<Notes, Integer> {
     Page<Notes> findByIsDeletedFalse(Pageable pageable);
 
     List<Notes> findAllByIsDeletedAndDeletedOnBefore(boolean b, LocalDateTime cutOffDate);
+
+//    List<Notes> findByIdAndIsFavourite(Integer userID, boolean b);
+
+    List<Notes> findByCreatedByAndIsFavourite(Integer userID, boolean b);
 }

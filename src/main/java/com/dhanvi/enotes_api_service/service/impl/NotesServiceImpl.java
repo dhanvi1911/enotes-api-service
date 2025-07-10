@@ -11,6 +11,7 @@ import com.dhanvi.enotes_api_service.repository.CategoryRepo;
 import com.dhanvi.enotes_api_service.repository.FileDetailsRepo;
 import com.dhanvi.enotes_api_service.repository.NotesRepo;
 import com.dhanvi.enotes_api_service.service.NotesService;
+import com.dhanvi.enotes_api_service.util.CommonUtil;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -248,6 +250,38 @@ public class NotesServiceImpl implements NotesService {
             notesRepo.deleteAll(deletedNotes);
         }
 
+    }
+
+    @Override
+    public void markFavouriteNote(Integer noteID) throws Exception {
+       Notes note = notesRepo.findById(noteID).orElseThrow(()-> new ResourceNotFoundExceptionHandler("Invalid Note ID"));
+       if(note.getIsFavourite()){
+           throw new IllegalStateException("Note already marked as favourite");
+       }
+       else{
+           note.setIsFavourite(true);
+           notesRepo.save(note);
+       }
+
+    }
+
+    @Override
+    public void unmarkFavourite(Integer noteID) throws Exception {
+        Notes note =notesRepo.findById(noteID).orElseThrow(()-> new ResourceNotFoundExceptionHandler("Invalid Note ID"));
+        if(note.getIsFavourite()){
+            note.setIsFavourite(false);
+            notesRepo.save(note);
+        }
+        else{
+            throw new IllegalStateException("Note has note been marked as favourite");
+        }
+
+    }
+
+    @Override
+    public List<Notes> allFavouriteNotes(Integer userID) {
+        List<Notes> Favnotes = notesRepo.findByCreatedByAndIsFavourite(userID, true);
+        return Favnotes;
     }
 
 
