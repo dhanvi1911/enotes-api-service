@@ -123,6 +123,12 @@ public class NotesController {
         return CommonUtil.createBuildResponse(notes, HttpStatus.OK);
     }
 
+    @GetMapping("copy-note/{id}")
+    public ResponseEntity<?> copyNotes(@PathVariable Integer id) throws Exception {
+        notesService.copyNotes(id);
+        return CommonUtil.createBuildResponseMessage("Copied Successfully", HttpStatus.CREATED);
+    }
+
 
 
 }
