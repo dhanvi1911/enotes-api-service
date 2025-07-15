@@ -2,8 +2,10 @@ package com.dhanvi.enotes_api_service.util;
 
 import com.dhanvi.enotes_api_service.dto.UserDto;
 
+import com.dhanvi.enotes_api_service.exception.ExistDataException;
 import com.dhanvi.enotes_api_service.repository.RoleRepo;
 
+import com.dhanvi.enotes_api_service.repository.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -17,6 +19,9 @@ public class Validation {
     @Autowired
     RoleRepo userRoleRepo;
 
+    @Autowired
+    UserRepo userRepo;
+
     public void UserValidation(UserDto userDto){
         if(!StringUtils.hasText(userDto.getFirstName())){
             throw new IllegalArgumentException("First Name cannot be empty");
@@ -26,6 +31,13 @@ public class Validation {
         }
         if(!StringUtils.hasText(userDto.getEmail()) || !userDto.getEmail().matches(Constants.EMAIL_REGEX)){
             throw new IllegalArgumentException("Email is invalid");
+        }
+        else {
+            Boolean exsists = userRepo.existsByEmail(userDto.getEmail());
+            if (exsists){
+                throw new ExistDataException("Email already registered");
+            }
+
         }
         if(!StringUtils.hasText(userDto.getMobNo()) || !userDto.getMobNo().matches(Constants.MOB_REGEX)){
             throw new IllegalArgumentException("Mobile number is invalid");
