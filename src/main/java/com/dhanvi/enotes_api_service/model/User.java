@@ -20,6 +20,10 @@ public class User {
     private String password;
     private String mobNo;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "status_id")
+    private AccountStatus accountStatus;
+
     @ManyToMany
     private List<Role> role;
 
