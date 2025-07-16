@@ -3,5 +3,5 @@ package com.dhanvi.enotes_api_service.service;
 import com.dhanvi.enotes_api_service.dto.UserDto;
 
 public interface UserService {
-    Boolean register(UserDto userDto);
+    Boolean register(UserDto userDto) throws Exception;
 }
