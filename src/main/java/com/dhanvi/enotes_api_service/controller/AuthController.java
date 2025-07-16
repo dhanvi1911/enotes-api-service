@@ -8,14 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/auth")
 public class AuthController {
 
     @Autowired
     private UserService userService;
 
     @PostMapping("save")
-    public ResponseEntity<?> register(@RequestBody UserDto userDto){
+    public ResponseEntity<?> register(@RequestBody UserDto userDto) throws Exception {
         Boolean registered = userService.register(userDto);
         if(registered){
             return CommonUtil.createErrorResponseMessage("Registered SUccessfully", HttpStatus.CREATED);
