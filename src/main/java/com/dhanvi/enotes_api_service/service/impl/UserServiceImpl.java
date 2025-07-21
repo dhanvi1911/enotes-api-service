@@ -1,6 +1,9 @@
 package com.dhanvi.enotes_api_service.service.impl;
 
+import com.dhanvi.enotes_api_service.config.security.CustomUserDetails;
 import com.dhanvi.enotes_api_service.dto.EmailRequest;
+import com.dhanvi.enotes_api_service.dto.LoginRequest;
+import com.dhanvi.enotes_api_service.dto.LoginResponse;
 import com.dhanvi.enotes_api_service.dto.UserDto;
 import com.dhanvi.enotes_api_service.model.AccountStatus;
 import com.dhanvi.enotes_api_service.model.User;
@@ -12,9 +15,15 @@ import com.dhanvi.enotes_api_service.util.Validation;
 import org.apache.catalina.mapper.Mapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.pulsar.PulsarProperties;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.beans.Encoder;
 import java.util.UUID;
 
 @Service
@@ -35,6 +44,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     EmailService emailService;
 
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    BCryptPasswordEncoder passwordEncoder;
+
     @Override
     public Boolean register(UserDto userDto) throws Exception {
 
@@ -47,12 +62,30 @@ public class UserServiceImpl implements UserService {
                 .verificationCode(UUID.randomUUID().toString())
                 .build();
         user.setAccountStatus(accountStatus);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         User saved =userRepo.save(user);
         if(!ObjectUtils.isEmpty(saved)){
 //            emailSend(saved);
             return true;
         }
         return false;
+    }
+
+    @Override
+    public LoginResponse login(LoginRequest loginRequest) {
+        Authentication authenticate = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+        if (authenticate.isAuthenticated()){
+            CustomUserDetails customUserDetails= (CustomUserDetails)authenticate.getPrincipal();
+            String token = "assdsfrgdhkgkhjkjh";
+            LoginResponse loginResponse = LoginResponse.builder()
+                    .userDto(mapper.map(customUserDetails.getUser(), UserDto.class))
+                    .token(token)
+                    .build();
+            return loginResponse;
+
+        }
+        return null;
     }
 
     private void emailSend(User saved) throws Exception {

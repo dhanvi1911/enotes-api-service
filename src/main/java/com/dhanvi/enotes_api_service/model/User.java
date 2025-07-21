@@ -24,7 +24,7 @@ public class User {
     @JoinColumn(name = "status_id")
     private AccountStatus accountStatus;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> role;
 
 }
