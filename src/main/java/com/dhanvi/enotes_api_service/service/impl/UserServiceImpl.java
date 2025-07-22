@@ -10,6 +10,7 @@ import com.dhanvi.enotes_api_service.model.User;
 import com.dhanvi.enotes_api_service.repository.RoleRepo;
 import com.dhanvi.enotes_api_service.repository.UserRepo;
 
+import com.dhanvi.enotes_api_service.service.JwtService;
 import com.dhanvi.enotes_api_service.service.UserService;
 import com.dhanvi.enotes_api_service.util.Validation;
 import org.apache.catalina.mapper.Mapper;
@@ -50,6 +51,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    private JwtService jwtService;
+
     @Override
     public Boolean register(UserDto userDto) throws Exception {
 
@@ -77,7 +81,7 @@ public class UserServiceImpl implements UserService {
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
         if (authenticate.isAuthenticated()){
             CustomUserDetails customUserDetails= (CustomUserDetails)authenticate.getPrincipal();
-            String token = "assdsfrgdhkgkhjkjh";
+            String token = jwtService.GenerateToken(customUserDetails.getUser());
             LoginResponse loginResponse = LoginResponse.builder()
                     .userDto(mapper.map(customUserDetails.getUser(), UserDto.class))
                     .token(token)
