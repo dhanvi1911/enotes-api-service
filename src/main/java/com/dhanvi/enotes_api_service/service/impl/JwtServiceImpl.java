@@ -1,14 +1,16 @@
 package com.dhanvi.enotes_api_service.service.impl;
 
+import com.dhanvi.enotes_api_service.exception.JwtExpiredTokenException;
 import com.dhanvi.enotes_api_service.model.User;
 import com.dhanvi.enotes_api_service.service.JwtService;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.Key;
@@ -61,11 +63,20 @@ public class JwtServiceImpl implements JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(decryptKey(secretKey))
-                .build().parseSignedClaims(token)
-                .getPayload();
-        return claims;
+        try {
+             return Jwts.parser()
+                    .verifyWith(decryptKey(secretKey))
+                    .build().parseSignedClaims(token)
+                    .getPayload();
+        } catch (ExpiredJwtException e) {
+            throw new JwtExpiredTokenException("Token is Expired");
+        }
+        catch (JwtException e) {
+            throw new JwtExpiredTokenException("Invalid Jwt token");
+        }
+        catch (Exception e) {
+            throw e;
+        }
     }
 
     private SecretKey decryptKey(String secretKey) {

@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class CategoryContoller {
     CategoryService categoryService;
 
     @PostMapping("save-category")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> saveCategory(@Valid @RequestBody CategoryDto categoryDto){
         Boolean saveCategory= categoryService.saveCategory(categoryDto);
         if(saveCategory){
@@ -37,6 +39,7 @@ public class CategoryContoller {
 
     }
     @GetMapping("get-categories")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getAllCategory(){
         List<CategoryDto> categories= categoryService.getAllCategory();
         if(CollectionUtils.isEmpty(categories)){
@@ -50,6 +53,7 @@ public class CategoryContoller {
     }
 
     @GetMapping("active-categories")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<?> getActiveCategory(){
         List<CategoryResponseDto> categories= categoryService.getActiveCategory();
         if(CollectionUtils.isEmpty(categories)){
@@ -64,6 +68,7 @@ public class CategoryContoller {
 
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getCategoryById(@PathVariable Integer id) throws Exception {
         CategoryDto categoryDto= categoryService.getCategoryById(id);
         if(ObjectUtils.isEmpty(categoryDto)){
@@ -77,6 +82,7 @@ public class CategoryContoller {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> deleteCategoryById(@PathVariable Integer id){
         Boolean deleted= categoryService.deleteCategoryById(id);
         if(deleted){
