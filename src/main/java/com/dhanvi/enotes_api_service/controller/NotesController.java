@@ -64,7 +64,7 @@ public class NotesController {
 
     @GetMapping("user-notes")   // for pagination
     public ResponseEntity<?> getAllNotesOfUser(@RequestParam (defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size){
-        Integer userID = 1;
+        Integer userID = CommonUtil.getLoggedInUser().getId();
         Page<NotesDto> notesDtos = notesService.getAllNotesByUserID(userID, page, size);
         return new ResponseEntity<>(notesDtos, HttpStatus.FOUND);
     }
@@ -83,7 +83,7 @@ public class NotesController {
 
     @GetMapping("RecycleBinNotes")
     public ResponseEntity<?> getUserRecycleBinNotes(){
-        Integer userID =1;
+        Integer userID = CommonUtil.getLoggedInUser().getId();
         List<NotesDto> RecycledNotes = notesService.getUserRecycleBinNotes(userID);
         if (CollectionUtils.isEmpty(RecycledNotes)){
             return CommonUtil.createBuildResponseMessage("No notes present in the recycled bin", HttpStatus.OK);
@@ -99,7 +99,7 @@ public class NotesController {
 
     @DeleteMapping("empty-recycle-bin")
     public ResponseEntity<?> deleteAllNotesFromRecycleBin() throws Exception {
-        Integer userID=1;
+        Integer userID=CommonUtil.getLoggedInUser().getId();
         notesService.deleteAllNotesFromRecycleBin(userID);
         return CommonUtil.createBuildResponseMessage("Deleted Notes from Recycle bin for the user", HttpStatus.OK);
     }
@@ -118,7 +118,7 @@ public class NotesController {
 
     @GetMapping("Favourites")
     public ResponseEntity<?> allFavouritesNotes(){
-        Integer userID=1;
+        Integer userID = CommonUtil.getLoggedInUser().getId();
         List<Notes> notes = notesService.allFavouriteNotes(userID);
         return CommonUtil.createBuildResponse(notes, HttpStatus.OK);
     }

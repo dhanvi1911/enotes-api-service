@@ -1,8 +1,11 @@
 package com.dhanvi.enotes_api_service.util;
 
+import com.dhanvi.enotes_api_service.config.security.CustomUserDetails;
 import com.dhanvi.enotes_api_service.handler.GenericResponse;
+import com.dhanvi.enotes_api_service.model.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class CommonUtil {
 
@@ -38,5 +41,15 @@ public class CommonUtil {
                 .message("Failed")
                 .build();
         return response.create();
+    }
+
+    public static User getLoggedInUser() {
+        try{
+            CustomUserDetails loggedUser = (CustomUserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            return loggedUser.getUser();
+        } catch (Exception e) {
+            throw e;
+        }
+
     }
 }
