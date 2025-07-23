@@ -1,10 +1,7 @@
 package com.dhanvi.enotes_api_service.service.impl;
 
 import com.dhanvi.enotes_api_service.config.security.CustomUserDetails;
-import com.dhanvi.enotes_api_service.dto.EmailRequest;
-import com.dhanvi.enotes_api_service.dto.LoginRequest;
-import com.dhanvi.enotes_api_service.dto.LoginResponse;
-import com.dhanvi.enotes_api_service.dto.UserDto;
+import com.dhanvi.enotes_api_service.dto.*;
 import com.dhanvi.enotes_api_service.model.AccountStatus;
 import com.dhanvi.enotes_api_service.model.User;
 import com.dhanvi.enotes_api_service.repository.RoleRepo;
@@ -12,6 +9,7 @@ import com.dhanvi.enotes_api_service.repository.UserRepo;
 
 import com.dhanvi.enotes_api_service.service.JwtService;
 import com.dhanvi.enotes_api_service.service.UserService;
+import com.dhanvi.enotes_api_service.util.CommonUtil;
 import com.dhanvi.enotes_api_service.util.Validation;
 import org.apache.catalina.mapper.Mapper;
 import org.modelmapper.ModelMapper;
@@ -21,6 +19,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -50,6 +49,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
+
+    @Autowired
+    PasswordEncoder passEncoder;
 
     @Autowired
     private JwtService jwtService;
@@ -83,13 +85,24 @@ public class UserServiceImpl implements UserService {
             CustomUserDetails customUserDetails= (CustomUserDetails)authenticate.getPrincipal();
             String token = jwtService.GenerateToken(customUserDetails.getUser());
             LoginResponse loginResponse = LoginResponse.builder()
-                    .userDto(mapper.map(customUserDetails.getUser(), UserDto.class))
+                    .userDto(mapper.map(customUserDetails.getUser(), UserResponse.class))
                     .token(token)
                     .build();
             return loginResponse;
 
         }
         return null;
+    }
+
+    @Override
+    public void changePassword(PasswordChangeRequest passwordChangeRequest) {
+       User user = CommonUtil.getLoggedInUser();
+       if(!passEncoder.matches(passwordChangeRequest.getOldPassword(),user.getPassword())){
+           throw new IllegalArgumentException("Old Password is incorrect.");
+       }
+       String encodedPassword = passEncoder.encode(passwordChangeRequest.getNewPassword());
+       user.setPassword(encodedPassword);
+       userRepo.save(user);
     }
 
     private void emailSend(User saved) throws Exception {
