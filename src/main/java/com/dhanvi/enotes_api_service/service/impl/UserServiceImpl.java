@@ -2,6 +2,7 @@ package com.dhanvi.enotes_api_service.service.impl;
 
 import com.dhanvi.enotes_api_service.config.security.CustomUserDetails;
 import com.dhanvi.enotes_api_service.dto.*;
+import com.dhanvi.enotes_api_service.exception.ResourceNotFoundExceptionHandler;
 import com.dhanvi.enotes_api_service.model.AccountStatus;
 import com.dhanvi.enotes_api_service.model.User;
 import com.dhanvi.enotes_api_service.repository.RoleRepo;
@@ -22,6 +23,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.beans.Encoder;
 import java.util.UUID;
@@ -103,6 +105,65 @@ public class UserServiceImpl implements UserService {
        String encodedPassword = passEncoder.encode(passwordChangeRequest.getNewPassword());
        user.setPassword(encodedPassword);
        userRepo.save(user);
+    }
+
+    @Override
+    public void sendEmailPasswordReset(String Email) throws Exception {
+        User user = userRepo.findByEmail(Email);
+        if(ObjectUtils.isEmpty(user)){
+            throw new ResourceNotFoundExceptionHandler("Invalid Email ID");
+        }
+
+        String passwordResetToken = UUID.randomUUID().toString();
+        user.getAccountStatus().setPasswordResetToken(passwordResetToken);
+        User updatedUser =userRepo.save(user);
+
+        sendEmailRequest(updatedUser);
+    }
+
+    @Override
+    public void verifyPasswordResetLink(Integer uid, String code) throws Exception {
+        User user = userRepo.findById(uid).orElseThrow(()-> new ResourceNotFoundExceptionHandler("Invalid User"));
+        String exsistToken = user.getAccountStatus().getPasswordResetToken();
+        if(StringUtils.hasText(code)){
+            if (!StringUtils.hasText(exsistToken)){
+                throw new IllegalArgumentException("You have already resetted the password once");
+            }
+            if (!exsistToken.equalsIgnoreCase(code)){
+                throw new IllegalArgumentException("invalid url");
+            }
+
+        }else {
+            throw new IllegalArgumentException("Invalid token");
+        }
+    }
+
+    @Override
+    public void resetPassword(PasswordResetRequest passwordResetRequest) throws Exception{
+        User user = userRepo.findById(passwordResetRequest.getUid()).orElseThrow(()-> new ResourceNotFoundExceptionHandler("Invalid User"));
+        String encodedPass = passEncoder.encode(passwordResetRequest.getNewPassword());
+        user.setPassword(encodedPass);
+        user.getAccountStatus().setPasswordResetToken(null);
+        userRepo.save(user);
+
+    }
+
+    private void sendEmailRequest(User user) throws Exception {
+        String message = "Hi <b>"+user.getFirstName()+"</b> <br>"
+                +"You have requested to reset the password of your account.<br>"
+                +"Click on the below link to change the password. <br>"
+                +"<a href ='[[url]]'>Change password</a><br>"
+                +"<p> Ignore the mail if your remember the password or if you have not made the request.</p>"
+                + "Thanks <br> Enotes.com";
+
+        message = message.replace("[[url]]","http://localhost:8080/api/v1/home/verify-password-link?'uid="+user.getId()+"&&code="+user.getAccountStatus().getPasswordResetToken());
+        EmailRequest emailRequest = EmailRequest.builder()
+                .to(user.getEmail())
+                .title("Password Reset")
+                .subject("Password Reset link")
+                .message(message)
+                .build();
+        emailService.SendEmail(emailRequest);
     }
 
     private void emailSend(User saved) throws Exception {
