@@ -69,6 +69,13 @@ public class NotesController {
         return new ResponseEntity<>(notesDtos, HttpStatus.FOUND);
     }
 
+    @GetMapping("search-notes")   // for pagination
+    public ResponseEntity<?> searchNotes(@RequestParam String keyword, @RequestParam (defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+        Integer userID = CommonUtil.getLoggedInUser().getId();
+        Page<NotesDto> notesDtos = notesService.getNotesByUserSearch(page, size, keyword);
+        return new ResponseEntity<>(notesDtos, HttpStatus.FOUND);
+    }
+
     @GetMapping("delete/{id}")
     public ResponseEntity<?> deleteNote(@PathVariable Integer id) throws Exception {
         notesService.softDeleteNote(id);

@@ -3,6 +3,7 @@ package com.dhanvi.enotes_api_service.service.impl;
 import com.dhanvi.enotes_api_service.dto.CategoryDto;
 import com.dhanvi.enotes_api_service.dto.FileDetailsDto;
 import com.dhanvi.enotes_api_service.dto.NotesDto;
+import com.dhanvi.enotes_api_service.dto.NotesResponse;
 import com.dhanvi.enotes_api_service.exception.ResourceNotFoundExceptionHandler;
 import com.dhanvi.enotes_api_service.model.Category;
 import com.dhanvi.enotes_api_service.model.FileDetails;
@@ -206,6 +207,15 @@ public class NotesServiceImpl implements NotesService {
         return notesPage.map(note -> mapper.map(note, NotesDto.class));
 
     }
+
+    @Override
+    public Page<NotesDto> getNotesByUserSearch(int page, int size, String keyword) {
+        Integer userId= CommonUtil.getLoggedInUser().getId();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Notes> notesPage = notesRepo.searchNotes(keyword,userId,pageable);
+        return notesPage.map(note -> mapper.map(note, NotesDto.class));
+    }
+
 
     @Override
     public void softDeleteNote(Integer id) throws Exception {
