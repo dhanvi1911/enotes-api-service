@@ -1,6 +1,7 @@
 package com.dhanvi.enotes_api_service.service;
 
 import com.dhanvi.enotes_api_service.dto.NotesDto;
+import com.dhanvi.enotes_api_service.dto.NotesResponse;
 import com.dhanvi.enotes_api_service.exception.ResourceNotFoundExceptionHandler;
 import com.dhanvi.enotes_api_service.model.FileDetails;
 import com.dhanvi.enotes_api_service.model.Notes;
@@ -18,6 +19,8 @@ public interface NotesService {
     FileDetails getFileDetails(Integer id) throws Exception;
 
     Page<NotesDto> getAllNotesByUserID(Integer UserId, int page, int size);
+
+    Page<NotesDto> getNotesByUserSearch(int page, int size, String keyword);
 
     void softDeleteNote(Integer id) throws Exception;
 
