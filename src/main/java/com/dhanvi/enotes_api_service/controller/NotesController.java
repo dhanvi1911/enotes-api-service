@@ -7,6 +7,8 @@ import com.dhanvi.enotes_api_service.model.FileDetails;
 import com.dhanvi.enotes_api_service.model.Notes;
 import com.dhanvi.enotes_api_service.service.NotesService;
 import com.dhanvi.enotes_api_service.util.CommonUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.*;
@@ -25,9 +27,12 @@ public class NotesController {
     @Autowired
     private NotesService notesService;
 
+    Logger log = LoggerFactory.getLogger(NotesController.class);
+
 
     @PostMapping("save")
     public ResponseEntity<?> saveNotes(@ModelAttribute NotesDto notesDto) throws Exception {
+        log.info("Entered into saveNotes function in NotesController");
         Boolean savedNotes= notesService.saveNotes(notesDto);
         if(savedNotes){
             return CommonUtil.createBuildResponseMessage("Note saved successfully", HttpStatus.CREATED);
