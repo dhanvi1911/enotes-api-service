@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableJpaAuditing(auditorAwareRef = "auditorAware")
 @SpringBootApplication
 @EnableScheduling
-public class EnotesApiServiceApplication {
+public class 	EnotesApiServiceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(EnotesApiServiceApplication.class, args);
